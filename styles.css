@@ -1,0 +1,53 @@
+header {
+    text-align: center;
+    font-size: 18px;
+}
+
+#mainContainer {
+    height: 500px;
+    width: 100%;
+    background: red;
+    display: flex;
+}
+
+#favouritesContainer {
+    flex: 1;
+    background: green;
+}
+
+#searchContainer {
+    flex: 1;
+    background: blue;
+}
+
+#favouritesListContainer {
+    background: white;
+    height: 200px;
+    width: 50%;
+    overflow: auto;
+}
+
+#advertsContainer {
+    width: 100%;
+    height: 100px;
+    background: yellow;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mc-margin-20 {
+    margin: 20px;
+}
+
+.mc-margin-10 {
+    margin: 10px;
+}
+
+.mc-margin-right-5 {
+    margin-right: 5px;
+}
+
+.mc-margin-left-20 {
+    margin-left: 20px;
+}
