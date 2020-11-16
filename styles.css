@@ -51,3 +51,11 @@ header {
 .mc-margin-left-20 {
     margin-left: 20px;
 }
+
+.movieInfo {
+    color: white;
+}
+
+.movieInfoPoster {
+    height: 300px;
+}
