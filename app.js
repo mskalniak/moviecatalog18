@@ -31,19 +31,17 @@ function onAddBtnClicked() {
 }
 
 function onDeleteBtnClicked(event) {
+    let id = Number(event.target.id.split('-')[1]);
+
     // Model
     favouritesMovies = favouritesMovies.filter(function(elem) {
-        return elem.id !== Number(event.target.id);
+        return elem.id !== id;
     });
 
     // UI
     countFavouritesMovies();
     updateFavouritesListUI();
 }
-
-// function onEditBtnClicked(event) {
-//     console.log(event.target.id);
-// }
 
 function countFavouritesMovies() {
     const counterElem = document.getElementById('favouritesCount');
@@ -56,7 +54,7 @@ function updateFavouritesListUI() {
 
     favouritesMovies.forEach(function(movie) {
         const container = document.createElement('div');
-        container.id = `container-${movie.id}`; //TO-DO: change in other places
+        container.id = `container-${movie.id}`;
 
         // paragraph
         const paragraph = document.createElement('p');
@@ -65,23 +63,67 @@ function updateFavouritesListUI() {
         // delete button
         const deleteBtn = document.createElement('button');
         deleteBtn.innerText = 'Usuń';
-        deleteBtn.id = `deleteBtn-${movie.id}`; //TO-DO: change in other places
+        deleteBtn.id = `deleteBtn-${movie.id}`;
         deleteBtn.addEventListener('click', onDeleteBtnClicked);
 
         // edit button
         const editBtn = document.createElement('button');
         editBtn.innerText = 'Edytuj';
-        editBtn.id = movie.id; //TO-DO: change to editBtn-<id>
+        editBtn.id = `editBtn-${movie.id}`; 
         editBtn.addEventListener('click', function() {
-            console.log('id: ', movie.id);
+            onEditButtonClicked(movie);
         });
 
+        //poster image
+        let posterContainer;
+        if (movie.poster) {
+            posterContainer = document.createElement('div');
+            posterContainer.innerHTML = `<img class="movieInfoPoster-${movie.id}" src="${movie.poster}" />`;
+        }
+
+        // search in db button
+        const searchInDbBtn = document.createElement('button');
+        searchInDbBtn.innerText = 'Wyszukaj w bazie';
+        searchInDbBtn.id = `searchInDbBtn-${movie.id}`; 
+        searchInDbBtn.addEventListener('click', function() {
+            axios.get(`http://www.omdbapi.com/?apikey=7015f6d&t=${movie.name}`).then(function(movieResponse) {
+                console.log('movie resp: ', movieResponse);
+                console.log('movie resp title: ', movieResponse.data.Title);
+        
+                const poster = movieResponse.data.Poster;
+                movie.poster = poster;
+
+                updateFavouritesListUI();
+            });
+        });
+        
+
         container.appendChild(paragraph);
+        movie.poster && container.appendChild(posterContainer);
         container.appendChild(deleteBtn);
         container.appendChild(editBtn);
+        container.appendChild(searchInDbBtn);
 
         favouritesListContainer.appendChild(container);
     });
+}
+
+function onEditButtonClicked(movie) {
+    let containerId = `container-${movie.id}`;
+    let container = document.getElementById(containerId);
+
+    container.innerHTML = `
+        <input id="editedInput-${movie.id}" value="${movie.name}"></input>
+        <button onclick="onSaveButtonClicked(${movie.id})">Zapisz</button>
+    `;
+}
+
+function onSaveButtonClicked(id) {
+    let movie = favouritesMovies.find(elem => elem.id === id);
+    let inputElem = document.getElementById(`editedInput-${id}`);
+    movie.name = inputElem.value;
+
+    updateFavouritesListUI();
 }
 
 function changeAdverts() {
@@ -114,20 +156,14 @@ function onSearchBtnClicked() {
             <div><img class="movieInfoPoster" src="${foundMovie.poster}" /></div>
             <button onclick="onAddToFavourites()">Dodaj do ulubionych</button>
         `;
-
-        // const btn = document.createElement('button');
-        // btn.innerText = "Dodaj do ulubionych";
-        // btn.addEventListener('click', function() {
-        //     console.log('found movie::: ', foundMovie);
-        // });
-        // foundMovieContainer.appendChild(btn);
     });
 }
 
 function onAddToFavourites() {
     let movie = {
         name: foundMovie.title,
-        id: lastId
+        id: lastId,
+        poster: foundMovie.poster
     };
     favouritesMovies.push(movie);
     lastId++;
